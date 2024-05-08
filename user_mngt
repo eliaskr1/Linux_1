@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ ! $# -eq 1 ]; then
+    echo "kommando tar exakt 1 argument" >&2
+    exit 1
+    fi
+
+if [ ! -f "$1" ]; then
+    echo "argument måste vara en fil" >&2
+    exit 2
+    fi
+
+while IFS="," read -r fornamn efternamn losenord operation
+do
+    first_three_f=${fornamn:0:3}
+    first_three_l=${efternamn:0:3}
+    username=$first_three_f$first_three_l
+    case "$operation" in    
+    add)
+        sudo adduser -q --gecos '' --disabled-login "$username"
+        echo "användare skapad"
+        ;;
+    remove)
+        sudo userdel -r $username
+        echo "användare borttagen"
+        ;;
+    esac
+done <"$1" # förnamn,efternamn,lösenord,operation
+
+
+
